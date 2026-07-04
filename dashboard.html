@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MM2 Predictor — Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a1a;
+      color: #ddd;
+      min-height: 100vh;
+    }
+    .nav {
+      background: #12122a;
+      border-bottom: 1px solid #2a2a5e;
+      padding: 12px 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav a { color: #888; text-decoration: none; font-size: 0.9em; }
+    .nav a:hover { color: #4fc3f7; }
+    .nav .brand { color: #e94560; font-weight: bold; font-size: 1.1em; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+    .card {
+      background: #12122a;
+      border: 1px solid #2a2a5e;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      color: #4fc3f7;
+      margin-bottom: 16px;
+      font-size: 1.2em;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-box {
+      background: #16163a;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid #1e1e42;
+    }
+    .stat-box .num {
+      font-size: 2em;
+      font-weight: bold;
+      font-family: monospace;
+    }
+    .stat-box .label {
+      font-size: 0.75em;
+      color: #888;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+    .stat-box.green .num { color: #81c784; }
+    .stat-box.red .num { color: #e94560; }
+    .stat-box.blue .num { color: #4fc3f7; }
+    .stat-box.yellow .num { color: #ffb74d; }
+    .history-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid #1e1e42;
+      font-size: 0.85em;
+      font-family: monospace;
+    }
+    .history-item.win { border-left: 3px solid #81c784; }
+    .history-item.loss { border-left: 3px solid #e94560; }
+    .history-item .side { font-weight: bold; }
+    .history-item .side.heads { color: #4fc3f7; }
+    .history-item .side.tails { color: #ffb74d; }
+    .history-item .time { color: #666; font-size: 0.8em; }
+    .history-item .result-icon { font-size: 1.1em; }
+    .prediction-display {
+      text-align: center;
+      padding: 20px;
+    }
+    .prediction-display .big {
+      font-size: 2.5em;
+      font-weight: bold;
+    }
+    .prediction-display .big.heads { color: #4fc3f7; }
+    .prediction-display .big.tails { color: #ffb74d; }
+    .prediction-display .confidence {
+      font-size: 1.1em;
+      color: #888;
+      margin-top: 8px;
+    }
+    .prediction-display .confidence strong { color: #81c784; }
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #555;
+    }
+    .empty-state .big-icon { font-size: 3em; margin-bottom: 12px; }
+    .btn {
+      background: #e94560;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+    .btn:hover { opacity: 0.85; }
+    .clear-btn {
+      background: transparent;
+      border: 1px solid #444;
+      color: #888;
+      padding: 6px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8em;
+      margin-top: 8px;
+    }
+    .clear-btn:hover { border-color: #e94560; color: #e94560; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0a0a1a; }
+    ::-webkit-scrollbar-thumb { background: #2a2a5e; border-radius: 2px; }
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <span class="brand">🎯 MM2 Predictor</span>
+    <a href="index.html">Home</a>
+    <a href="config.html">Config</a>
+    <a href="dashboard.html" style="color:#4fc3f7;">Dashboard</a>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>📊 Live Stats</h2>
+      <div class="stats-grid">
+        <div class="stat-box green">
+          <div class="num" id="totalWins">0</div>
+          <div class="label">Wins</div>
+        </div>
+        <div class="stat-box red">
+          <div class="num" id="totalLosses">0</div>
+          <div class="label">Losses</div>
+        </div>
+        <div class="stat-box blue">
+          <div class="num" id="totalGames">0</div>
+          <div class="label">Total Games</div>
+        </div>
+        <div class="stat-box yellow">
+          <div class="num" id="accuracy">0%</div>
+          <div class="label">Prediction Accuracy</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Next Prediction</h2>
+      <div class="prediction-display" id="predictionDisplay">
+        <div class="big" style="color:#555;">—</div>
+        <div class="confidence">Confidence: <strong>0%</strong></div>
+        <div style="margin-top:8px;color:#888;font-size:0.85em;">Strategy: <span id="activeStrategy">—</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h2 style="margin-bottom:0;">📜 Coinflip History</h2>
+        <button class="clear-btn" id="clearHistory">Clear History</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">
+          <div class="big-icon">🎲</div>
+          <p>No coinflips recorded yet.</p>
+          <p style="font-size:0.85em;margin-top:4px;">Open BloxLuck and load the bookmarklet to start tracking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadDashboard() {
+      try {
+        const history = JSON.parse(localStorage.getItem('mm2History')) || [];
+        const config = JSON.parse(localStorage.getItem('mm2PredictorConfig')) || {};
+        
+        const wins = history.filter(h => h.won).length;
+        const losses = history.filter(h => !h.won).length;
+        const total = history.length;
+        const accuracy = total > 0 ? Math.round((wins / total) * 100) : 0;
+        
+        document.getElementById('totalWins').textContent = wins;
+        document.getElementById('totalLosses').textContent = losses;
+        document.getElementById('totalGames').textContent = total;
+        document.getElementById('accuracy').textContent = accuracy + '%';
+        document.getElementById('activeStrategy').textContent = config.strategy || 'streak';
+        
+        // Prediction logic
+        if (history.length >= 2) {
+          const last10 = history.slice(-10);
+          const lastResult = history[history.length - 1];
+          const strategy = config.strategy || 'streak';
+          let prediction, confidence;
+          
+          if (strategy === 'streak') {
+            prediction = lastResult.side;
+            const streakCount = 1;
+            let i = history.length - 2;
+            while (i >= 0 && history[i].side === lastResult.side) {
+              streakCount++;
+              i--;
+            }
+            confidence = Math.min(50 + streakCount * 8, 92);
+          } else if (strategy === 'alternate') {
+            prediction = lastResult.side === 'heads' ? 'tails' : 'heads';
+            const alternations = last10.filter((h, i) => i > 0 && h.side !== last10[i-1].side).length;
+            confidence = Math.min(50 + alternations * 5, 88);
+          } else {
+            const heads = last10.filter(h => h.side === 'heads').length;
+            const tails = last10.length - heads;
+            prediction = heads > tails ? 'heads' : 'tails';
+            confidence = Math.min(50 + Math.abs(heads - tails) * 5, 90);
+          }
+          
+          const predEl = document.querySelector('#predictionDisplay .big');
+          predEl.textContent = prediction.toUpperCase();
+          predEl.className = 'big ' + prediction;
+          document.querySelector('#predictionDisplay .confidence strong').textContent = confidence + '%';
+        }
+        
+        // Render history
+        const listEl = document.getElementById('historyList');
+        if (history.length === 0) {
+          listEl.innerHTML = `
+            <div class="empty-state">
+              <div class="big-icon">🎲</div>
+              <p>No coinflips recorded yet.</p>
+              <p style="font-size:0.85em;margin-top:4px;">Open BloxLuck and load the bookmarklet to start tracking.</p>
+            </div>
+          `;
+        } else {
+          listEl.innerHTML = history.slice().reverse().map(h => {
+            const time = new Date(h.timestamp).toLocaleTimeString();
+            return `
+              <div class="history-item ${h.won ? 'win' : 'loss'}">
+                <span class="side ${h.side}">${h.side.toUpperCase()}</span>
+                <span>${h.won ? '✅ WIN' : '❌ LOSS'}</span>
+                <span class="time">${time}</span>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch(e) {
+        console.error('Dashboard load error:', e);
+      }
+    }
+
+    document.getElementById('clearHistory').addEventListener('click', () => {
+      if (confirm('Clear all coinflip history?')) {
+        localStorage.removeItem('mm2History');
+        loadDashboard();
+      }
+    });
+
+    // Listen for storage changes (from bookmarklet)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'mm2History' || e.key === 'mm2PredictorConfig') {
+        loadDashboard();
+      }
+    });
+
+    loadDashboard();
+    // Auto-refresh every 2 seconds
+    setInterval(loadDashboard, 2000);
+  </script>
+</body>
+</html>
