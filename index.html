@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MM2 Predictor — BloxLuck Coinflip Tool</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a1a;
+      color: #ddd;
+      min-height: 100vh;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1a1a3e, #0f0f23);
+      padding: 60px 20px;
+      text-align: center;
+      border-bottom: 1px solid #2a2a5e;
+    }
+    .hero h1 {
+      font-size: 2.5em;
+      color: #e94560;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 1.1em;
+      color: #888;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .card {
+      background: #12122a;
+      border: 1px solid #2a2a5e;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      color: #4fc3f7;
+      margin-bottom: 16px;
+      font-size: 1.3em;
+    }
+    .step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+    .step-num {
+      background: #e94560;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-content h3 {
+      font-size: 1em;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+    .step-content p {
+      font-size: 0.9em;
+      color: #888;
+      line-height: 1.5;
+    }
+    .code-box {
+      background: #0a0a1a;
+      border: 1px solid #2a2a5e;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8em;
+      color: #81c784;
+      word-break: break-all;
+      margin-top: 8px;
+      user-select: all;
+      cursor: pointer;
+      position: relative;
+    }
+    .code-box:hover { border-color: #e94560; }
+    .code-box::after {
+      content: '📋 Click to copy';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 0.75em;
+      color: #666;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .code-box.copied::after { content: '✅ Copied!'; color: #81c784; }
+    .btn {
+      display: inline-block;
+      background: #e94560;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 1em;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #e94560;
+      color: #e94560;
+    }
+    .btn-outline:hover { background: #e94560; color: white; }
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .feature {
+      background: #16163a;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #1e1e42;
+    }
+    .feature .icon { font-size: 1.8em; margin-bottom: 8px; }
+    .feature h4 { font-size: 0.95em; margin-bottom: 4px; }
+    .feature p { font-size: 0.8em; color: #888; }
+    .footer {
+      text-align: center;
+      padding: 30px;
+      color: #555;
+      font-size: 0.85em;
+      border-top: 1px solid #1e1e42;
+    }
+    @media (max-width: 600px) {
+      .features { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.8em; }
+    }
+    .disclaimer {
+      background: #1e1e3e;
+      border-left: 3px solid #e94560;
+      padding: 12px 16px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #aaa;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>🎯 MM2 Predictor</h1>
+    <p>Smart coinflip pattern predictor for BloxLuck. Track results, predict outcomes, auto-bet.</p>
+    <div style="margin-top: 24px;">
+      <a href="#setup" class="btn">Get Started</a>
+      <a href="config.html" class="btn btn-outline" style="margin-left: 10px;">Config Panel</a>
+    </div>
+  </div>
+
+  <div class="container" id="setup">
+    <div class="card">
+      <h2>📋 How It Works</h2>
+      <p style="color:#888;margin-bottom:20px;">No extension needed. Just a bookmarklet that works on any browser (Kiwi, Chrome, Firefox).</p>
+      
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Copy this bookmarklet</h3>
+          <p>Drag or copy the code below and save it as a browser bookmark.</p>
+          <div class="code-box" id="bookmarkletCode">javascript:(function(){var s=document.createElement('script');s.src='https://YOUR-SITE.com/engine.js';s.onload=function(){window.__mm2Predictor.init()};document.body.appendChild(s)})();</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Go to BloxLuck</h3>
+          <p>Open <strong>bloxluck.com</strong> in your browser and log in.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Tap the bookmarklet</h3>
+          <p>Tap the bookmark you just created — the predictor will load and a floating panel will appear.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Play and profit</h3>
+          <p>The predictor tracks every coinflip, learns patterns, and shows you what to bet next.</p>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        ⚠️ This tool is for authorized testing only. Only use on platforms you own or have written permission to test.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔮 Features</h2>
+      <div class="features">
+        <div class="feature">
+          <div class="icon">📊</div>
+          <h4>Pattern Detection</h4>
+          <p>Analyzes streaks, alternations, and frequency bias in real coinflip results.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🎯</div>
+          <h4>Smart Prediction</h4>
+          <p>Multiple strategies: streak-following, alternation, frequency analysis.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🤖</div>
+          <h4>Auto-Bet</h4>
+          <p>Automatically places bets on the predicted winning side.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">📈</div>
+          <h4>Live Dashboard</h4>
+          <p>See wins, losses, prediction accuracy, and coinflip history in real-time.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⚙️ Initial Setup (One-Time)</h2>
+      <p style="color:#888;margin-bottom:16px;">The first time you use the predictor, you need to discover what event names BloxLuck uses.</p>
+      
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Load the bookmarklet in DISCOVERY mode</h3>
+          <p>Open BloxLuck, tap the bookmarklet. The panel will show <strong>"DISCOVERY MODE"</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Play 3-5 coinflips</h3>
+          <p>Each coinflip will log events to the panel. Watch for:</p>
+          <ul style="color:#888;font-size:0.9em;padding-left:20px;margin-top:6px;">
+            <li><strong>BET EVENT</strong> — the event sent when you join a game (e.g., <code>coinflip:join</code>)</li>
+            <li><strong>RESULT EVENT</strong> — the event received with the outcome (e.g., <code>coinflip:result</code>)</li>
+            <li><strong>SIDE FIELD</strong> — how the side is named (e.g., <code>side</code>, <code>choice</code>, <code>team</code>)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Save your config</h3>
+          <p>Go to the <a href="config.html" style="color:#4fc3f7;">Config Panel</a> and save the event names. They'll be stored in your browser for next time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    MM2 Predictor — For authorized security testing only. Not affiliated with BloxLuck or Roblox.
+  </div>
+
+  <script>
+    // Update the bookmarklet URL to this actual domain
+    const domain = window.location.origin;
+    const codeEl = document.getElementById('bookmarkletCode');
+    codeEl.textContent = `javascript:(function(){var s=document.createElement('script');s.src='${domain}/engine.js';s.onload=function(){window.__mm2Predictor.init()};document.body.appendChild(s)})();`;
+    
+    // Copy to clipboard on click
+    codeEl.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(codeEl.textContent);
+        codeEl.classList.add('copied');
+        setTimeout(() => codeEl.classList.remove('copied'), 2000);
+      } catch(e) {
+        // Fallback
+        const range = document.createRange();
+        range.selectNode(codeEl);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        codeEl.classList.add('copied');
+        setTimeout(() => codeEl.classList.remove('copied'), 2000);
+      }
+    });
+  </script>
+</body>
+    </html>
